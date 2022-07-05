@@ -1,38 +1,54 @@
 import React, { useState, useRef } from "react";
+import Web3 from 'web3'
 import { Form, Card, Button } from "react-bootstrap";
 import { EthereumTransactions } from "./EthereumTransactions.jsx";
 
 function EthereumCard() {
 
-   // Usetstate for storing state.
-   const [chainId, setChainId] = useState("mainnet")
-   const [ethAddress, setEthAddress] = useState("0xaa7a9ca87d3694b5755f213b5d04094b8d0f0a6f ");
-   const [ethBalance, setEthBalance] = useState(null);
-   const [blockHeight, setBlockHeight] = useState("9000000");  
-   const [ip, setIp] = useState("test")
+    // Usetstate for storing state.
+    const [chainId, setChainId] = useState("mainnet");
+    const [ethAddress, setEthAddress] = useState("0xc55dbe3cd4afa41e8c24283c5be8d2481e2b79c1");
+    const [ethBalance, setEthBalance] = useState(null);
+    const [blockHeight, setBlockHeight] = useState("9000000");  
+    const [ip, setIp] = useState("test");
 
-   const defaultVariantValues = {
+    const defaultVariantValues = {
         "mainnet": { ip: "test"},
         "rinkeby": { ip: "test"}
-    }
+    };
 
-   // Handler for chain change.
-   const handleSelect = (e) => {
+    // Handler for chain change.
+    const handleSelect = (e) => {
 
-       // Handle change of selection in ComboBox.
-       setChainId(e.currentTarget.value)
-       
-       if(!!defaultVariantValues[e.currentTarget.value]){
+        // Handle change of selection in ComboBox.
+        setChainId(e.currentTarget.value);
+        
+        if(!!defaultVariantValues[e.currentTarget.value]){
 
-           // Set new values.
-           console.log(e.currentTarget.value)
-       }
-   }
+            // Set new values.
+            console.log(e.currentTarget.value);
+        }
+    };
+
+    // Test for web3 lib.
+    const loadBlockchainData = async() => {
+
+        console.log("web3");
+
+        try {
+            const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+            const balance = await web3.eth.getBalance(ethAddress);
+            console.log(balance);
+            } catch (error) {
+            console.log(error);
+            }
+    };
 
     // Button for handling transactions.
     const buttonHandlerTransactions = () => {
 
-        console.log("buttonHandlerTransactions")
+        console.log("buttonHandlerTransactions");
+        var results = loadBlockchainData();
     };
 
     return (
