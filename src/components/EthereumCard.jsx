@@ -6,49 +6,57 @@ import { EthereumTransactions } from "./EthereumTransactions.jsx";
 function EthereumCard() {
 
     // Usetstate for storing state.
-    const [chainId, setChainId] = useState("mainnet");
     const [ethAddress, setEthAddress] = useState("0xc55dbe3cd4afa41e8c24283c5be8d2481e2b79c1");
-    const [ethBalance, setEthBalance] = useState(null);
     const [blockHeight, setBlockHeight] = useState("9000000");  
-    const [ip, setIp] = useState("test");
+    const [ethTransactions, setEthTransactions] = useState(null);  
+    const [ethBalance, setEthBalance] = useState(null);
 
-    const defaultVariantValues = {
-        "mainnet": { ip: "test"},
-        "rinkeby": { ip: "test"}
-    };
+    // const [chainId, setChainId] = useState("mainnet");
+    // const [ip, setIp] = useState("test");
 
-    // Handler for chain change.
-    const handleSelect = (e) => {
+    // const defaultVariantValues = {
+    //     "mainnet": { ip: "test"},
+    //     "rinkeby": { ip: "test"}
+    // };
 
-        // Handle change of selection in ComboBox.
-        setChainId(e.currentTarget.value);
+    // // Handler for chain change.
+    // const handleSelect = (e) => {
+
+    //     // Handle change of selection in ComboBox.
+    //     setChainId(e.currentTarget.value);
         
-        if(!!defaultVariantValues[e.currentTarget.value]){
+    //     if(!!defaultVariantValues[e.currentTarget.value]){
 
-            // Set new values.
-            console.log(e.currentTarget.value);
+    //         // Set new values.
+    //         console.log(e.currentTarget.value);
+    //     }
+    // };
+
+    // Get transactions from etherscan with startblock constrain.
+    const getTransactions = async() => {
+        try {
+            const apiKey = '';
+            const etherscanApiUrl = `http://api.etherscan.io/api?module=account&action=txlist&s123123ort=desc&address=${ethAddress}&apikey=${apiKey}&startblock=${blockHeight}`;
+            const response = await fetch(etherscanApiUrl);
+            const data = await response.json();
+
+            if (data.status === "1"){
+                return data.result;
+            }
+        } catch (err) {
+            console.log(err)
         }
     };
+    
+    // Button for handling transactions query and current balance.
+    const buttonHandlerTransactions = async() => {
+        var transactions = await getTransactions();
+        console.log(transactions); // TODO: remove later
 
-    // Test for web3 lib.
-    const loadBlockchainData = async() => {
-
-        console.log("web3");
-
-        try {
-            const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
-            const balance = await web3.eth.getBalance(ethAddress);
-            console.log(balance);
-            } catch (error) {
-            console.log(error);
-            }
-    };
-
-    // Button for handling transactions.
-    const buttonHandlerTransactions = () => {
-
-        console.log("buttonHandlerTransactions");
-        var results = loadBlockchainData();
+        if(transactions != undefined) {
+            setEthTransactions(transactions);
+            setEthBalance("TODO"); // Add Eth value
+        }
     };
 
     return (
@@ -69,23 +77,23 @@ function EthereumCard() {
                         <Form.Control type="text" placeholder="" value={blockHeight} onChange={(e) => setBlockHeight(e.target.value)}  />
                     </Form.Group>
 
-                    <Form.Group className="mb-3" >
+                    {/* <Form.Group className="mb-3" >
                         <Form.Label>Select node:</Form.Label>
                         <Form.Select onChange={(e) => {handleSelect(e)}} >
                             <option value={"mainnet"}>Mainnet</option>
                             <option value={"rinkeby"}>Rinkeby</option>
                         </Form.Select>
-                    </Form.Group>
+                    </Form.Group> */}
                     
                     <Form.Group className="mb-3" >
                         <Form.Label>Balance of {ethAddress}: {ethBalance} {ethBalance ? ("ETH") : ("")}</Form.Label>
-                        <Button data-testid="transactions-button" onClick={buttonHandlerTransactions} variant="primary" className="me-2">
+                        <Button data-testid="transactions-button" onClick={async () => {await buttonHandlerTransactions();} } variant="primary" className="me-2">
                             Get Transactions
                         </Button>
                     </Form.Group>
 
                     <EthereumTransactions 
-                        chainId={chainId}
+                        ethTransactions={ethTransactions}
                         />
 
                 </Form>

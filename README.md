@@ -17,3 +17,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
+
+I used etherscan which is blockchain explorer to avoid off-chain indexing by each block
+I didn't added redux bla bla bal
