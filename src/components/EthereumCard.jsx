@@ -1,3 +1,4 @@
+import Web3 from "web3";
 import React, { useState, useRef } from "react";
 import { Form, Card, Button } from "react-bootstrap";
 import { EthereumTransactions } from "./EthereumTransactions.jsx";
@@ -44,6 +45,24 @@ function EthereumCard() {
         }
     };
 
+    // Get balance from etherscan.
+    const getBalance = async() => {
+        try {
+            const url = `${etherscanApi}?module=account&action=balance&address=${ethAddress}&tag=latest&apikey=${apiKey}&startblock=${blockHeight}`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            console.log(response);
+            console.log(data);
+
+              if (data.status === "1"){
+                return data.result;
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    };
+
     // Union operation with transactions and token contract interactions based on hash id as a key.
     // Arrays can have different sizes and non-matching elements.
     // This is why in the end we need to sort them by blockNumber.
@@ -67,7 +86,7 @@ function EthereumCard() {
     
     // Button for handling transactions query and current balance.
     const buttonHandlerTransactions = async() => {
-        let [transactions, tokens] = await Promise.all([getTransactions(), getTokensTransactions()]);
+        let [transactions, tokens, balance] = await Promise.all([getTransactions(), getTokensTransactions(), getBalance()]);
 
         // Case scenario for token contract interactions. 
         if(transactions != undefined && tokens != undefined)
@@ -77,7 +96,7 @@ function EthereumCard() {
 
         if(transactions != undefined) {
             setEthTransactions(transactions);
-            setEthBalance("TODO"); // Add Eth value
+            setEthBalance(Web3.utils.fromWei((balance), "ether"));
         }
     };
 
