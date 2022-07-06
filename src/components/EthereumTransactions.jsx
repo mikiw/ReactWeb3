@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import React, { useState, forwardRef } from "react";
+import React, { forwardRef } from "react";
 import { Card, ListGroup } from "react-bootstrap";
 
 export const EthereumTransactions = forwardRef((props, ref) => {
@@ -10,7 +10,7 @@ export const EthereumTransactions = forwardRef((props, ref) => {
         <>
             <Card className="text-center row">
                 <Card.Header>
-                    <strong>EthereumTransactionsList</strong>
+                    <strong>EthereumTransactionsList ({ethTransactions?.length})</strong>
                 </Card.Header>
                 <Card.Body>
                     {ethTransactions?.map((transaction) =>
@@ -36,6 +36,10 @@ export const EthereumTransactions = forwardRef((props, ref) => {
                                 <ListGroup.Item>
                                     <Card.Title>Gas paid: </Card.Title>
                                     <Card.Text>{Web3.utils.fromWei((transaction.gasUsed * transaction.gasPrice).toString(), "ether")} Eth</Card.Text>
+                                </ListGroup.Item>
+                                <ListGroup.Item>
+                                    <Card.Title>Is Error: </Card.Title>
+                                    <Card.Text>?</Card.Text>
                                 </ListGroup.Item>
                                 {transaction.tokenName ? (
                                     <>

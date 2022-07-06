@@ -28,4 +28,4 @@ Add later:
 
 TODO for future:
 - Add paging in while loop for etherscan API call
-- 
+- Add Erc721 Token Txns (for example uniswap v3)
