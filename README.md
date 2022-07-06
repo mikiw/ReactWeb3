@@ -18,5 +18,14 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
 
-I used etherscan which is blockchain explorer to avoid off-chain indexing by each block
-I didn't added redux bla bla bal
+Questions:
+- ALL transaction data means internal also?
+
+Add later:
+- I used etherscan which is blockchain explorer to avoid off-chain indexing by each block
+- I didn't added redux bla bla bal
+- Check transactionsUnionByHash implementation
+
+TODO for future:
+- Add paging in while loop for etherscan API call
+- 

@@ -1,9 +1,12 @@
 import React, { useState, useRef } from "react";
-import Web3 from 'web3'
 import { Form, Card, Button } from "react-bootstrap";
 import { EthereumTransactions } from "./EthereumTransactions.jsx";
 
 function EthereumCard() {
+
+    // Consts.
+    const apiKey = "";
+    const etherscanApi = "https://api.etherscan.io/api";
 
     // Usetstate for storing state.
     const [ethAddress, setEthAddress] = useState("0xc55dbe3cd4afa41e8c24283c5be8d2481e2b79c1");
@@ -11,33 +14,11 @@ function EthereumCard() {
     const [ethTransactions, setEthTransactions] = useState(null);  
     const [ethBalance, setEthBalance] = useState(null);
 
-    // const [chainId, setChainId] = useState("mainnet");
-    // const [ip, setIp] = useState("test");
-
-    // const defaultVariantValues = {
-    //     "mainnet": { ip: "test"},
-    //     "rinkeby": { ip: "test"}
-    // };
-
-    // // Handler for chain change.
-    // const handleSelect = (e) => {
-
-    //     // Handle change of selection in ComboBox.
-    //     setChainId(e.currentTarget.value);
-        
-    //     if(!!defaultVariantValues[e.currentTarget.value]){
-
-    //         // Set new values.
-    //         console.log(e.currentTarget.value);
-    //     }
-    // };
-
-    // Get transactions from etherscan with startblock constrain.
+    // Get all transactions from etherscan with startblock constrain.
     const getTransactions = async() => {
         try {
-            const apiKey = '';
-            const etherscanApiUrl = `http://api.etherscan.io/api?module=account&action=txlist&s123123ort=desc&address=${ethAddress}&apikey=${apiKey}&startblock=${blockHeight}`;
-            const response = await fetch(etherscanApiUrl);
+            const url = `${etherscanApi}?module=account&action=txlist&sort=desc&address=${ethAddress}&apikey=${apiKey}&startblock=${blockHeight}`;
+            const response = await fetch(url);
             const data = await response.json();
 
             if (data.status === "1"){
@@ -47,10 +28,51 @@ function EthereumCard() {
             console.log(err)
         }
     };
+        
+    // Get tokens transactions from etherscan with startblock constrain.
+    const getTokensTransactions = async() => {
+        try {
+            const url = `${etherscanApi}?module=account&action=tokentx&address=${ethAddress}&sort=desc&apikey=${apiKey}&startblock=${blockHeight}`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+              if (data.status === "1"){
+                return data.result;
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    };
+
+    // Union operation with transactions and token contract interactions based on hash id as a key.
+    // Arrays can have different sizes and non-matching elements.
+    // This is why in the end we need to sort them by blockNumber.
+    const transactionsUnionByHash = (...arrays) => {
+        let zip = Object.values(arrays.reduce((txIndex, array) => {
+            array.forEach((tx) => {
+                if(txIndex[tx.hash])
+                    txIndex[tx.hash] = Object.assign(txIndex[tx.hash], tx)
+                else
+                    txIndex[tx.hash] = tx
+            })
+
+            return txIndex
+        }, {}));
+
+        // Sort by blockNumber after zip.
+        zip.sort((a, b) => b.blockNumber - a.blockNumber); 
+
+        return zip;
+    };
     
     // Button for handling transactions query and current balance.
     const buttonHandlerTransactions = async() => {
-        var transactions = await getTransactions();
+        let [transactions, tokens] = await Promise.all([getTransactions(), getTokensTransactions()]);
+
+        // Case scenario for token contract interactions. 
+        if(transactions != undefined && tokens != undefined)
+            transactions = transactionsUnionByHash(transactions, tokens);
+
         console.log(transactions); // TODO: remove later
 
         if(transactions != undefined) {
@@ -77,16 +99,8 @@ function EthereumCard() {
                         <Form.Control type="text" placeholder="" value={blockHeight} onChange={(e) => setBlockHeight(e.target.value)}  />
                     </Form.Group>
 
-                    {/* <Form.Group className="mb-3" >
-                        <Form.Label>Select node:</Form.Label>
-                        <Form.Select onChange={(e) => {handleSelect(e)}} >
-                            <option value={"mainnet"}>Mainnet</option>
-                            <option value={"rinkeby"}>Rinkeby</option>
-                        </Form.Select>
-                    </Form.Group> */}
-                    
                     <Form.Group className="mb-3" >
-                        <Form.Label>Balance of {ethAddress}: {ethBalance} {ethBalance ? ("ETH") : ("")}</Form.Label>
+                        <Form.Label>Current balance of {ethAddress}: {ethBalance} {ethBalance ? ("ETH") : ("")}</Form.Label>
                         <Button data-testid="transactions-button" onClick={async () => {await buttonHandlerTransactions();} } variant="primary" className="me-2">
                             Get Transactions
                         </Button>
