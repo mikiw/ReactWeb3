@@ -27,5 +27,5 @@ Add later:
 - Check transactionsUnionByHash implementation
 
 TODO for future:
-- Add paging in while loop for etherscan API call
-- Add Erc721 Token Txns (for example uniswap v3)
+- Add paging in while loop for etherscan API call to exede 10000 row limit
+- Add Other Token Standards (Erc721 for uniswap v3 and others)
