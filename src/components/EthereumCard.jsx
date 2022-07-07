@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
+import { BN } from "web3-utils";
 import moment from "moment";
 import { EthereumTransactions } from "./EthereumTransactions.jsx";
+import { EthereumBalance } from "./EthereumBalance.jsx";
 
 function EthereumCard() {
     
@@ -18,12 +20,14 @@ function EthereumCard() {
     const etherscanApi = "https://api.etherscan.io/api";
 
     // Usetstate for storing state.
-    const [ethAddress, setEthAddress] = useState("0xc55dbe3cd4afa41e8c24283c5be8d2481e2b79c1");
-    const [startBlock, setStartBlock] = useState("9000000");  
+    const [ethAddress, setEthAddress] = useState("0xe6a238ac126b00439e7b84045d339d142205d2c8");
+    const [startBlock, setStartBlock] = useState("11000000");  
     const [endBlock, setEndBlock] = useState("0");
     const [endBlockDate, setEndBlockDate] = useState(moment(Date.now()).format("YYYY-MM-DD"));   
     const [ethTransactions, setEthTransactions] = useState(null);  
-    const [ethBalanceBlock, setEthBalanceBlock] = useState(null);
+    const [ethBalance, setEthBalance] = useState(null);
+
+    const [tokensBalance, setTokensBalance] = useState(null);
 
     useEffect(() => {
         // Update block height after component mount.
@@ -93,44 +97,44 @@ function EthereumCard() {
         return zip;
     };
 
-    const calculateBalance = (txList, txListInternal) => {
+    const calculateEthBalance = (txList, txListInternal) => {
         const address = ethAddress.toLowerCase();
 
-        let inputTxListEth = new Web3.utils.BN(0);
-        let outputTxListEth = new Web3.utils.BN(0);
-        let outputTxListGas = new Web3.utils.BN(0);
+        let inputTxListEth = new BN(0);
+        let outputTxListEth = new BN(0);
+        let outputTxListGas = new BN(0);
 
-        let inputTxListInternalEth = new Web3.utils.BN(0);
-        let outputTxListInternalEth = new Web3.utils.BN(0);
-        let outputTxListInternalGas = new Web3.utils.BN(0);
+        let inputTxListInternalEth = new BN(0);
+        let outputTxListInternalEth = new BN(0);
+        let outputTxListInternalGas = new BN(0);
 
         // Input transactions.
         txList.filter(tx => tx.to == address).forEach(tx => {
             // When a transaction is marked "Fail" on Etherscan.io, the funds the sender 
             // intended to send are not deducted but remain in the sender's wallet.
             // However, the "Gas Fee" will still be deducted.
-            inputTxListEth = tx.isError == "0" ? inputTxListEth.add(new Web3.utils.BN(tx.value)) : inputTxListEth;
+            inputTxListEth = tx.isError == "0" ? inputTxListEth.add(new BN(tx.value)) : inputTxListEth;
         });
 
         // Output transactions and gas fees.
         txList.filter(tx => tx.from == address).forEach(tx => {
             // Same story here.
-            outputTxListEth = tx.isError == "0" ? outputTxListEth.add(new Web3.utils.BN(tx.value)) : outputTxListEth;
-            outputTxListGas = outputTxListGas.add(new Web3.utils.BN(tx.gasUsed).mul(new Web3.utils.BN(tx.gasPrice)));
+            outputTxListEth = tx.isError == "0" ? outputTxListEth.add(new BN(tx.value)) : outputTxListEth;
+            outputTxListGas = outputTxListGas.add(new BN(tx.gasUsed).mul(new BN(tx.gasPrice)));
         });
 
         // Input internal transactions.
         txListInternal.filter(tx => tx.to == address).forEach(tx => {
-            inputTxListInternalEth = inputTxListInternalEth.add(new Web3.utils.BN(tx.value));
+            inputTxListInternalEth = inputTxListInternalEth.add(new BN(tx.value));
         });
 
         // Output internal transactions and gas fees.
         txListInternal.filter(tx => tx.from == address).forEach(tx => {
-            outputTxListInternalEth = outputTxListInternalEth.add(new Web3.utils.BN(tx.value));
-            outputTxListInternalGas = outputTxListInternalGas.add(new Web3.utils.BN(tx.gasUsed).mul(new Web3.utils.BN(tx.value)));
+            outputTxListInternalEth = outputTxListInternalEth.add(new BN(tx.value));
+            outputTxListInternalGas = outputTxListInternalGas.add(new BN(tx.gasUsed).mul(new BN(tx.value)));
         });
 
-        // Finish.
+        // Calculate balance.
         const balance = inputTxListEth
             .sub(outputTxListEth)
             .sub(outputTxListGas)
@@ -138,7 +142,64 @@ function EthereumCard() {
             .sub(outputTxListInternalEth) // If addres is a contract address.
             .sub(outputTxListInternalGas);
 
-        setEthBalanceBlock(Web3.utils.fromWei(balance, "ether"));
+        setEthBalance(Web3.utils.fromWei(balance, "ether"));
+    };
+
+    const groupBy = (key, array) => array.reduce((objectsByKeyValue, obj) => {
+        const value = obj[key];
+        objectsByKeyValue[value] = (objectsByKeyValue[value] || []).concat(obj);
+
+        return objectsByKeyValue;
+    }, {});
+
+    // Code based on fromWei() function from ethjs-unit library
+    // otherwise, we will lose decimal points for tokens with BN.
+    const tokenValueAsString = (balance, decimal) => {
+        const base = decimal;
+        const baseLength = decimal.length - 1 || 1;
+        let fraction = balance.mod(base).toString(10);
+
+        while (fraction.length < baseLength) {
+            fraction = `0${fraction}`;
+        }
+
+        return `${balance.div(base).toString(10)}${fraction == '0' ? '' : `.${fraction}`}`;
+    };
+
+    const calculateTokenBalance = (txListTokens) => {
+        let tokensBalances = [];
+        const address = ethAddress.toLowerCase();
+        const groupByContractAddress = groupBy("contractAddress", txListTokens);
+
+        Object.values(groupByContractAddress).forEach((contract) => {
+            let inputTokenValue = new BN(0);
+            let outputTokenValue = new BN(0);
+
+            // Input transactions.
+            contract.filter(tx => tx.to == address).forEach(tx => {
+                inputTokenValue = inputTokenValue.add(new BN(tx.value));
+            });
+            
+            // Output transactions and gas fees.
+            contract.filter(tx => tx.from == address).forEach(tx => {
+                outputTokenValue = outputTokenValue.add(new BN(tx.value));
+            });
+
+            const balance = inputTokenValue.sub(outputTokenValue);
+            const decimal = new BN(10).pow(new BN(contract[0].tokenDecimal));
+
+            tokensBalances.push({ 
+                "id": contract[0].contractAddress,
+                "name": contract[0].tokenName,
+                "symbol": contract[0].tokenSymbol,
+                "value": tokenValueAsString(balance, decimal)
+            });
+        });
+
+        console.log("tokensBalances", tokensBalances);
+        setTokensBalance(tokensBalances);
+
+        return tokensBalances;
     };
 
     // Button for handling transactions query and balance.
@@ -152,7 +213,9 @@ function EthereumCard() {
         ]);
 
         if(txList !== null && txListInternal !== null && txListTokens !== null){
-            calculateBalance(txList, txListInternal);
+            calculateEthBalance(txList, txListInternal);
+            calculateTokenBalance(txListTokens);
+            
             let txListUnion = [];
 
             // Case scenario for token contract interactions. 
@@ -178,79 +241,86 @@ function EthereumCard() {
         
         setStartBlock(0);
         setEndBlock(block);
-        setEthBalanceBlock(null);
+        setEthBalance(null);
         setEthTransactions(null);
     };
 
     return (
         <main className="ethereum-card row">
-        <h1>Ethereum Transactions Crawler</h1>
-        <div>
-            <form className='col col-lg-9'>
-            
-                <div>
-                    <label htmlFor="ethereumAdress" className="form-label col-sm-3">Ethereum Address:</label>
-                    <input 
-                        type="text" 
-                        placeholder="" 
-                        value={ethAddress} 
-                        onChange={(e) => setEthAddress(e.target.value)} 
-                        className="form-control" 
-                        id="ethereumAdress" />
-                </div>
+            <h1>Ethereum Transactions Crawler</h1>
+            <div>
+                <form className='col col-lg-9'>
+                
+                    <div>
+                        <label htmlFor="ethereumAdress" className="form-label col-sm-3">Ethereum Address:</label>
+                        <input 
+                            type="text" 
+                            placeholder="" 
+                            value={ethAddress} 
+                            onChange={(e) => setEthAddress(e.target.value)} 
+                            className="form-control" 
+                            id="ethereumAdress" />
+                    </div>
 
-                <div>
-                    <label htmlFor="startBlock" className="form-label col-sm-3">Start block:</label>
-                    <input 
-                        type="text" 
-                        placeholder="" 
-                        value={startBlock} 
-                        onChange={(e) => setStartBlock(e.target.value)}
-                        className="form-control" 
-                        id="startBlock" />
-                </div>
+                    <div>
+                        <label htmlFor="startBlock" className="form-label col-sm-3">Start block:</label>
+                        <input 
+                            type="text" 
+                            placeholder="" 
+                            value={startBlock} 
+                            onChange={(e) => setStartBlock(e.target.value)}
+                            className="form-control" 
+                            id="startBlock" />
+                    </div>
 
-                <div>
-                    <label htmlFor="endBlock" className="form-label col-sm-3">End block:</label>
-                    <input 
-                        type="text" 
-                        placeholder="" 
-                        value={endBlock} 
-                        onChange={(e) => setEndBlock(e.target.value)}
-                        className="form-control" 
-                        id="endBlock" />
-                </div>
+                    <div>
+                        <label htmlFor="endBlock" className="form-label col-sm-3">End block:</label>
+                        <input 
+                            type="text" 
+                            placeholder="" 
+                            value={endBlock} 
+                            onChange={(e) => setEndBlock(e.target.value)}
+                            className="form-control" 
+                            id="endBlock" />
+                    </div>
 
-                <div>
-                    <label htmlFor="endBlockDate" className="form-label col-sm-3">End block date:</label>
-                    <input 
-                        type="text" 
-                        placeholder="" 
-                        value={endBlockDate} 
-                        onChange={(e) => setEndBlockDate(e.target.value)}
-                        className="form-control" 
-                        id="endBlockDate" />
-                </div>
+                    <div>
+                        <label htmlFor="endBlockDate" className="form-label col-sm-3">End block date:</label>
+                        <input 
+                            type="text" 
+                            placeholder="" 
+                            value={endBlockDate} 
+                            onChange={(e) => setEndBlockDate(e.target.value)}
+                            className="form-control" 
+                            id="endBlockDate" />
+                    </div>
 
-                <div>
-                    <button data-testid="date-button" onClick={async (e) => {await buttonHandlerUpdateBlock(e)}} className="btn btn-light">
-                        Update blocks by date
-                    </button>
-                </div>
+                    <div>
+                        <button data-testid="date-button" onClick={async (e) => {await buttonHandlerUpdateBlock(e)}} className="btn btn-light">
+                            Update blocks by date
+                        </button>
+                    </div>
 
-                <div>
-                    <h2 className='my-5'>Balance</h2>
-                    <h6>Balance from block {startBlock} to {endBlock} of {ethAddress}: <span>{ethBalanceBlock} {ethBalanceBlock ? ("Ether") : ("")}</span></h6>
-                    <button data-testid="transactions-button" onClick={async (e) => {await buttonHandlerTransactions(e)}} className="btn btn-light">
-                        Get balance
-                    </button>
-                </div>
+                    <div>
+                        <EthereumBalance
+                            startBlock={startBlock}
+                            endBlock={endBlock}
+                            ethAddress={ethAddress}
+                            ethBalance={ethBalance}
+                            tokensBalance={tokensBalance}
+                            />
+                        <button data-testid="transactions-button" onClick={async (e) => {await buttonHandlerTransactions(e)}} className="btn btn-light">
+                            Get balances
+                        </button>
+                    </div>
 
-            </form>
+                </form>
 
-            <EthereumTransactions ethTransactions={ethTransactions} />
-        </div>
-    </main>
+                <EthereumTransactions
+                    ethTransactions={ethTransactions}
+                    />
+            </div>
+        </main>
     )
 }
 

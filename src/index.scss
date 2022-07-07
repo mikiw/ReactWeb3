@@ -9,6 +9,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+select, option {
+  min-width: 360px;       
+  max-width: 500px;
+  width: 80%;
+}
+
 .trunc {
   overflow: hidden;
   text-overflow: ellipsis;
