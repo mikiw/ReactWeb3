@@ -3,7 +3,27 @@ import React, { forwardRef } from "react";
 
 export const EthereumTransactions = forwardRef((props, ref) => {
 
-    const {ethTransactions} = props;
+    const {txList, txListTokens} = props;
+
+    // Union operation with transactions and token contract interactions based on hash id as a key.
+    // Arrays can have different sizes and non-matching elements.
+    // This is why in the end we need to sort them by blockNumber.
+    const transactionsUnionByHash = (...arrays) => {
+        let zip = Object.values(arrays.reduce((txIndex, array) => {
+            array.forEach((tx) => {
+                txIndex[tx.hash] ? txIndex[tx.hash] = Object.assign(txIndex[tx.hash], tx) : txIndex[tx.hash] = tx
+            })
+            
+            return txIndex
+        }, {}));
+
+        // Sort by blockNumber after zip.
+        zip.sort((a, b) => b.blockNumber - a.blockNumber); 
+
+        return zip;
+    };
+
+    const ethTransactions = transactionsUnionByHash(txList, txListTokens);
 
     return (!ethTransactions? (false):(
         <section className='transactions-list'>
