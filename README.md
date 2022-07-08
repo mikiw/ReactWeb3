@@ -14,7 +14,7 @@ npm start
 
 Later open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 In application is built successfully we should see page like this:
-![Page](./doc/page.png)
+![Page](./doc-img/page.png)
 
 Available scripts commands:
 `npm start`
@@ -33,10 +33,10 @@ When page will load the first API call we will make is to get last block number 
 TODO: Write how button works
 
 ## Example usage
-![Page](./doc/page-23tx.png)
-![Page](./doc/page-etherscan.png)
-![Page](./doc/page-26tx.png)
-![Page](./doc/usdc.png)
+![Page](./doc-img/page-23tx.png)
+![Page](./doc-img/page-etherscan.png)
+![Page](./doc-img/page-26tx.png)
+![Page](./doc-img/usdc.png)
 
 ## TODO
 
