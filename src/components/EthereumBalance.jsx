@@ -127,7 +127,7 @@ export const EthereumBalance = forwardRef((props, ref) => {
                 "id": contract[0].contractAddress,
                 "name": contract[0].tokenName,
                 "symbol": contract[0].tokenSymbol,
-                "value": tokenValueAsString(balance, decimal)
+                "value": tokenValueAsString(balance, decimal) // BN is broken for tokens balance.div(decimal).toString(10) why?
             });
         });
 

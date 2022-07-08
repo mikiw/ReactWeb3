@@ -1,7 +1,8 @@
 # Ethereum Transactions Crawler
 
 I used [etherscan](https://etherscan.io/) which is a blockchain explorer to avoid indexing by each block.
-It would be a struggle to write this application only with an Ethereum node.
+It would be a struggle to implement it in React App only with an Ethereum node connection.
+
 Pagination from etherscan is not implemented in this version so there is a 10000 limit per transaction data.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -36,7 +37,7 @@ Button `Update blocks by date` will convert data from `YYYY-MM-DD` format from `
 later block height will be updated based on corresponding timestamp.
 
 Button `Get balances and transactions` will get transaction data for given constraints like `Ethereum Address`, `Start block` and `End block`.
-Based on that data balances of Eth and tokens will be calculated.
+Based on that data balances of Eth and tokens will be calculated. For balances calculation I used `BN` from `web3-utils`.
 
 ## Example usage
 
@@ -45,13 +46,15 @@ TODO: write example usage
 ![Page](./doc-img/page-etherscan.png)
 ![Page](./doc-img/page-26tx.png)
 ![Page](./doc-img/usdc.png)
+![Page](./doc-img/usdc-balance.png)
 
 ## TODO
 
 TODO:
-- Test BN library, I don't know why but for this wallet 0x9f4a83475ef57f70c1a7754c3b381479626900ea I found that some tokens are not calculated properly. Check tokenValueAsString again.
+- test build
 
 TODO for future:
 - Add paging in while loop for etherscan API call to exceed 10000 row limit.
 - Add other Token standards (Erc721 for uniswap v3 and others)
 - Improve error handling and add some messages in UI.
+- Improve token display to support token migration (0x9f4a83475ef57f70c1a7754c3b381479626900ea nice wallet to tests)
