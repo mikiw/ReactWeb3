@@ -32,7 +32,7 @@ export const EthereumTransactions = forwardRef((props, ref) => {
 
     return (!ethTransactions? (false):(
         <section className='transactions-list'>
-            <h2>EthereumTransactions List ({ethTransactions?.length})</h2>
+            <h2>Ethereum transactions ({ethTransactions?.length})</h2>
             <div className='wrapper'>
                 {ethTransactions?.map((transaction) =>
                     <div key={transaction.hash}>

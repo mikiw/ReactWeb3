@@ -4,11 +4,6 @@ import { EthereumTransactions } from "./EthereumTransactions.jsx";
 import { EthereumBalance } from "./EthereumBalance.jsx";
 
 function EthereumCard() {
-    
-    // TODO: Better commnets for code and functions.
-    // TODO: Add tests.
-    // TODO: Any change in inputs should clear results?
-    // TODO: Readme with screens.
 
     // Consts.
     const apiKey = "TNYDY6U8QC6CGHP6YX49Y2N22FVQTNU4MX";
@@ -76,15 +71,25 @@ function EthereumCard() {
         fetchData().catch(console.error);
     }, []);
 
+    // Clear transaction data to avoid misleading state of UI.
+    const clearTransactions = () => {
+        setTxList(null);
+        setTxListInternals(null);
+        setTxListTokens(null);
+    };
+
+    // Update block height after component mount.
+    useEffect(() => {
+        clearTransactions();
+    }, [ethAddress, startBlock, endBlock, endBlockDate]);
+
     // Button handler for block update by date.
     const buttonHandlerUpdateBlock = async(e) => {
         e.preventDefault();
         
         setStartBlock(0);
         setEndBlock(await getBlockHeight(moment(endBlockDate).valueOf()));
-        setTxList(null);
-        setTxListInternals(null);
-        setTxListTokens(null);
+        clearTransactions();
     };
 
     // Button handler for transactions API calls.
