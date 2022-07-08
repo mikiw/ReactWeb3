@@ -6,33 +6,39 @@ Pagination from etherscan is not implemented in this version so there is a 10000
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-To run project we san simply run these 2 commands in the project directory:
+To run the project we can simply run these 2 commands in the project directory:
 ```
 npm install
 npm start
 ```
 
-Later open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-In application is built successfully we should see page like this:
-![Page](./doc-img/page.png)
-
-Available scripts commands:
+All available scripts commands:
 `npm start`
 `npm test`
 `npm run build`
 
+Later open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+
+If an application was built successfully we should see a page like this:
+![Page](./doc-img/page.png)
+
 ## Getting Started
 
-Application will query etherscan for transactions between 'Start block' and 'End block',
+Application will query etherscan for transactions between `Start block` and `End block`,
 later balances for eth and tokens will be calculated based on that data.
 So we can calculate the balances in specific block ranges.
 
-If we want to calculate balance from the beginning we can just simply input '0' as 'Start block'.
-When page will load the first API call we will make is to get last block number from etherscan so '0' should change to something near '15101312'.
+If we want to calculate balance from the beginning we can just simply input `0` as `Start block`.
+When page will load the first API call will make is to get last block number from etherscan so `0` should change to something near `15101234`.
 
-TODO: Write how button works
+Button `Update blocks by date` will convert data in `YYYY-MM-DD` format to block height of corresponding timestamp.
+
+Button `Get balances and transactions` will get transaction data for given constraints like `Ethereum Address`, `Start block` and `End block`.
+Based on that data balances of Eth and tokens will be calculated.
 
 ## Example usage
+
+TODO: write example usage
 ![Page](./doc-img/page-23tx.png)
 ![Page](./doc-img/page-etherscan.png)
 ![Page](./doc-img/page-26tx.png)
