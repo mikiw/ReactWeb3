@@ -29,7 +29,7 @@ Application will query etherscan for transactions between `Start block` and `End
 later balances for eth and tokens will be calculated based on that data.
 So we can calculate the balances in specific block ranges.
 
-When page will load the first API call will make is to get last block number from etherscan so `0` should change to something near `15101234`.
+When page will load the first API call will get last block number from etherscan so `0` should change to something near `15101234`.
 
 If we want to calculate balance from the beginning we can just simply input `0` as `Start block`.
 
@@ -41,17 +41,24 @@ Based on that data balances of Eth and tokens will be calculated. For balances c
 
 ## Example usage
 
-TODO: write example usage
-![Page](./doc-img/page-23tx.png)
-![Page](./doc-img/page-etherscan.png)
+Now we can use our app to check `0x5c18d2b7026bcaf3b5017f7056d70069d7a5865f` address balance 
+which is `0.009395840722894319` Ether (same as etherscan).
+
 ![Page](./doc-img/page-26tx.png)
+
+Etherscan balance:
+
+![Page](./doc-img/page-etherscan.png)
+
+If we will set a date to `2022-07-08` and we will click `Update blocks by date` button and later
+`Get balances and transactions` button we will have fewer transactions (23 instead of 26)
+also the Ether balance and USDC token balance will be different.
+
+![Page](./doc-img/page-23tx.png)
 ![Page](./doc-img/usdc.png)
 ![Page](./doc-img/usdc-balance.png)
 
 ## TODO
-
-TODO:
-- test build
 
 TODO for future:
 - Add paging in while loop for etherscan API call to exceed 10000 row limit.
