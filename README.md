@@ -2,6 +2,7 @@
 
 I used [etherscan](https://etherscan.io/) which is a blockchain explorer to avoid indexing by each block.
 It would be a struggle to write this application only with an Ethereum node.
+Pagination from etherscan is not implemented in this version so there is a 10000 limit per transaction data.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -13,7 +14,7 @@ npm start
 
 Later open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 In application is built successfully we should see page like this:
-TODO: add screen
+![Page](./doc/page.png)
 
 Available scripts commands:
 `npm start`
@@ -32,15 +33,18 @@ When page will load the first API call we will make is to get last block number 
 TODO: Write how button works
 
 ## Example usage
-TODO: example usage with screen
+![Page](./doc/page-23tx.png)
+![Page](./doc/page-etherscan.png)
+![Page](./doc/page-26tx.png)
+![Page](./doc/usdc.png)
 
 ## TODO
 
 TODO:
 - Add tests.
-- Any change in inputs should clear results?
 - Test BN library, I don't know why but for this wallet 0x9f4a83475ef57f70c1a7754c3b381479626900ea I found that some tokens are not calculated properly. Check tokenValueAsString again.
 
 TODO for future:
 - Add paging in while loop for etherscan API call to exceed 10000 row limit.
 - Add other Token standards (Erc721 for uniswap v3 and others)
+- Improve error handling and add some messages in UI.
