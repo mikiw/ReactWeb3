@@ -6,6 +6,13 @@ export const EthereumBalance = forwardRef((props, ref) => {
 
     const {startBlock, endBlock, ethAddress, txList, txListInternals, txListTokens } = props;
     
+    /**
+     * Group array by key.
+     * 
+     * @param {string} key Property name.
+     * @param {array} array Array to groupby.
+     * @return {array} Array of grouped arrays.
+     */
     const groupBy = (key, array) => array.reduce((objectsByKeyValue, obj) => {
         const value = obj[key];
         objectsByKeyValue[value] = (objectsByKeyValue[value] || []).concat(obj);
@@ -13,8 +20,15 @@ export const EthereumBalance = forwardRef((props, ref) => {
         return objectsByKeyValue;
     }, {});
 
-    // Code based on fromWei() function from ethjs-unit library
-    // otherwise, we will lose decimal points for tokens with BN.
+    /**
+     * Code based on fromWei() function from ethjs-unit library.
+     * Otherwise, we will lose decimal points for some tokens with BN library.
+     * Is there a bug in BN or what?
+     * 
+     * @param {BN} balance Balance as BN.
+     * @param {BN} decimal Decimal as BN, like 10e18.
+     * @return {string} Formatted result.
+     */
     const tokenValueAsString = (balance, decimal) => {
         const base = decimal;
         const baseLength = decimal.length - 1 || 1;
@@ -27,13 +41,19 @@ export const EthereumBalance = forwardRef((props, ref) => {
         return `${balance.div(base).toString(10)}${fraction == '0' ? '' : `.${fraction}`}`;
     };
 
+    /**
+     * Function to calculate ETH balance based on the transactions.
+     * 
+     * @param {array} txList Transactions.
+     * @param {array} txListInternals Ethereum Internal Transactions.
+     * @return {string} Balance as string calculated with fromWei() function.
+     */
     const calculateEthBalance = (txList, txListInternals) => {
         const address = ethAddress.toLowerCase();
 
         let inputTxListEth = new BN(0);
         let outputTxListEth = new BN(0);
         let outputTxListGas = new BN(0);
-
         let inputTxListInternalEth = new BN(0);
         let outputTxListInternalEth = new BN(0);
         let outputTxListInternalGas = new BN(0);
@@ -69,16 +89,22 @@ export const EthereumBalance = forwardRef((props, ref) => {
             .sub(outputTxListEth)
             .sub(outputTxListGas)
             .add(inputTxListInternalEth)
-            .sub(outputTxListInternalEth) // If addres is a contract address.
+            .sub(outputTxListInternalEth) // If address is a contract address.
             .sub(outputTxListInternalGas);
 
         return Web3.utils.fromWei(balance, "ether");
     };
 
+    /**
+     * Function to calculate tokens balances based on the tokens transactions.
+     * 
+     * @param {array} txListTokens Tokens transactions.
+     * @return {array} Balance as array with Objects.
+     */
     const calculateTokensBalances = (txListTokens) => {
-        let tokensBalances = [];
         const address = ethAddress.toLowerCase();
         const groupByContractAddress = groupBy("contractAddress", txListTokens);
+        let tokensBalances = [];
 
         Object.values(groupByContractAddress).forEach((contract) => {
             let inputTokenValue = new BN(0);
@@ -89,7 +115,7 @@ export const EthereumBalance = forwardRef((props, ref) => {
                 inputTokenValue = inputTokenValue.add(new BN(tx.value));
             });
             
-            // Output transactions and gas fees.
+            // Output transactions.
             contract.filter(tx => tx.from == address).forEach(tx => {
                 outputTokenValue = outputTokenValue.add(new BN(tx.value));
             });

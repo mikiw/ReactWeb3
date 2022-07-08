@@ -5,9 +5,14 @@ export const EthereumTransactions = forwardRef((props, ref) => {
 
     const {txList, txListTokens} = props;
 
-    // Union operation with transactions and token contract interactions based on hash id as a key.
-    // Arrays can have different sizes and non-matching elements.
-    // This is why in the end we need to sort them by blockNumber.
+    /**
+     * Union operation with transactions and token contract interactions based on hash id as a key.
+     * Arrays can have different sizes, non-matching elements and can be unsorted.
+     * This is why in the end we need to sort them by blockNumber.
+     *
+     * @param {...arrays} arrays Arrays of transactions that contain blockNumber.
+     * @return {array} Zipped data as sorted array by blockNumber.
+    */
     const transactionsUnionByHash = (...arrays) => {
         let zip = Object.values(arrays.reduce((txIndex, array) => {
             array.forEach((tx) => {

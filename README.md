@@ -1,31 +1,46 @@
-# Getting Started with Create React App
+# Ethereum Transactions Crawler
+
+I used [etherscan](https://etherscan.io/) which is a blockchain explorer to avoid indexing by each block.
+It would be a struggle to write this application only with an Ethereum node.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+To run project we san simply run these 2 commands in the project directory:
+```
+npm install
+npm start
+```
+
+Later open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+In application is built successfully we should see page like this:
+TODO: add screen
+
+Available scripts commands:
 `npm start`
 `npm test`
 `npm run build`
 
-## Available Scripts
+## Getting Started
 
-In the project directory, you can run:
+Application will query etherscan for transactions between 'Start block' and 'End block',
+later balances for eth and tokens will be calculated based on that data.
+So we can calculate the balances in specific block ranges.
 
-### `npm start`
+If we want to calculate balance from the beginning we can just simply input '0' as 'Start block'.
+When page will load the first API call we will make is to get last block number from etherscan so '0' should change to something near '15101312'.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+TODO: Write how button works
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Example usage
+TODO: example usage with screen
 
-Questions:
-- ALL transaction data means internal also?
+## TODO
 
-Add later:
-- I used etherscan which is blockchain explorer to avoid off-chain indexing by each block
-- I didn't added redux bla bla bal
-- Check transactionsUnionByHash implementation
+TODO:
+- Add tests.
+- Any change in inputs should clear results?
+- Test BN library, I don't know why but for this wallet 0x9f4a83475ef57f70c1a7754c3b381479626900ea I found that some tokens are not calculated properly. Check tokenValueAsString again.
 
 TODO for future:
-- Add paging in while loop for etherscan API call to exede 10000 row limit
-- Add Other Token Standards (Erc721 for uniswap v3 and others)
+- Add paging in while loop for etherscan API call to exceed 10000 row limit.
+- Add other Token standards (Erc721 for uniswap v3 and others)

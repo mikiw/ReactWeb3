@@ -5,11 +5,9 @@ import { EthereumBalance } from "./EthereumBalance.jsx";
 
 function EthereumCard() {
     
-    // TODO: Unification of etherscanApi calls with predicates.
     // TODO: Better commnets for code and functions.
-    // TODO: Update transactionsUnionByHash, can it be O(n)?
-    // TODO: Any change in inputs should clear results.
     // TODO: Add tests.
+    // TODO: Any change in inputs should clear results?
     // TODO: Readme with screens.
 
     // Consts.
@@ -17,7 +15,7 @@ function EthereumCard() {
     const etherscanApi = "https://api.etherscan.io/api";
 
     // Usetstate for storing state.
-    const [ethAddress, setEthAddress] = useState("0xe6a238ac126b00439e7b84045d339d142205d2c8");
+    const [ethAddress, setEthAddress] = useState("0x5c18d2b7026bcaf3b5017f7056d70069d7a5865f");
     const [startBlock, setStartBlock] = useState("11000000");  
     const [endBlock, setEndBlock] = useState("0");
     const [endBlockDate, setEndBlockDate] = useState(moment(Date.now()).format("YYYY-MM-DD"));   
@@ -29,7 +27,7 @@ function EthereumCard() {
      * Returns current block height from etherscan.
      *
      * @param {number} dateInMilliseconds Date in milliseconds.
-     * @return {number} TODO: The result.
+     * @return {string} API call result with block height by given date.
      */
      const getBlockHeight = async(dateInMilliseconds) => {
         try {
@@ -45,7 +43,12 @@ function EthereumCard() {
         }
     };
 
-    // Get all transactions from etherscan with startBlock/endBlock constrain.
+    /**
+     * Get all transactions from etherscan with startBlock/endBlock constrain.
+     *
+     * @param {number} action Action type like txList, txlistinternal, tokentx.
+     * @return {array} API call result as array of objects.
+     */
     const getTransactions = async(action) => {
         try {
             const url = `${etherscanApi}?module=account&action=${action}&sort=desc&address=${ethAddress}&apikey=${apiKey}&startblock=${startBlock}&endblock=${endBlock}`;
@@ -77,10 +80,8 @@ function EthereumCard() {
     const buttonHandlerUpdateBlock = async(e) => {
         e.preventDefault();
         
-        const block = await getBlockHeight(moment(endBlockDate).valueOf());
-        
         setStartBlock(0);
-        setEndBlock(block);
+        setEndBlock(await getBlockHeight(moment(endBlockDate).valueOf()));
         setTxList(null);
         setTxListInternals(null);
         setTxListTokens(null);
@@ -90,7 +91,7 @@ function EthereumCard() {
     const buttonHandlerTransactions = async(e) => {
         e.preventDefault();
 
-        let [txList, txListInternals, txListTokens] = await Promise.all([
+        const [txList, txListInternals, txListTokens] = await Promise.all([
             getTransactions("txList"),
             getTransactions("txlistinternal"),
             getTransactions("tokentx")
@@ -110,14 +111,14 @@ function EthereumCard() {
                 <form className='col col-lg-9'>
                 
                     <div>
-                        <label htmlFor="ethereumAdress" className="form-label col-sm-3">Ethereum Address:</label>
+                        <label htmlFor="ethereumAddress" className="form-label col-sm-3">Ethereum Address:</label>
                         <input 
                             type="text" 
                             placeholder="" 
                             value={ethAddress} 
                             onChange={(e) => setEthAddress(e.target.value)} 
                             className="form-control" 
-                            id="ethereumAdress" />
+                            id="ethereumAddress" />
                     </div>
 
                     <div>
@@ -169,7 +170,7 @@ function EthereumCard() {
                             txListTokens = {txListTokens || []}
                             />
                         <button data-testid="transactions-button" onClick={async (e) => {await buttonHandlerTransactions(e)}} className="btn btn-light">
-                            Get balances
+                            Get balances and transactions
                         </button>
                     </div>
 
