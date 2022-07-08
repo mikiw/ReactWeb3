@@ -28,10 +28,12 @@ Application will query etherscan for transactions between `Start block` and `End
 later balances for eth and tokens will be calculated based on that data.
 So we can calculate the balances in specific block ranges.
 
-If we want to calculate balance from the beginning we can just simply input `0` as `Start block`.
 When page will load the first API call will make is to get last block number from etherscan so `0` should change to something near `15101234`.
 
-Button `Update blocks by date` will convert data in `YYYY-MM-DD` format to block height of corresponding timestamp.
+If we want to calculate balance from the beginning we can just simply input `0` as `Start block`.
+
+Button `Update blocks by date` will convert data from `YYYY-MM-DD` format from `End block date` input to timestamp,
+later block height will be updated based on corresponding timestamp.
 
 Button `Get balances and transactions` will get transaction data for given constraints like `Ethereum Address`, `Start block` and `End block`.
 Based on that data balances of Eth and tokens will be calculated.
@@ -47,7 +49,6 @@ TODO: write example usage
 ## TODO
 
 TODO:
-- Add tests.
 - Test BN library, I don't know why but for this wallet 0x9f4a83475ef57f70c1a7754c3b381479626900ea I found that some tokens are not calculated properly. Check tokenValueAsString again.
 
 TODO for future:
