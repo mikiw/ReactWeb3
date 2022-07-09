@@ -1,0 +1,109 @@
+body {
+  text-align: center;
+  background-color: #00bcbc;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+select, option {
+  min-width: 360px;       
+  max-width: 500px;
+  width: 80%;
+}
+
+.trunc {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ethereum-card {
+  h1 {
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+  }
+
+  h6 {
+      & > span {
+          @extend .trunc;
+          font-weight: 600;
+          color: #f1ffff;
+          font-size: larger;
+      }
+  }
+
+  button {
+      margin: 1rem 0 1rem 0;
+  }
+
+  label {
+      text-align: end;
+      margin-right: 1rem;
+  }
+
+  form {
+      padding-left: 3rem;
+      padding-right: 3rem;
+      margin: auto;
+
+      & > div:not(:nth-child(5), :nth-child(6)) {
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+      }
+  }
+}
+
+.transactions-list {
+  font-size: small;
+  
+  h2 {
+      margin-top: 5rem;
+      margin-bottom: 5rem;
+  }
+
+  dl, dd {
+      margin-bottom: 0;
+      @extend .trunc;
+  }
+
+  dt {
+      text-align: end;
+  }
+
+  dd {
+      text-align: start;
+  }
+
+  .wrapper {
+      max-width: 80%;
+      margin: auto;
+
+      .row {
+          --bs-gutter-x: .625rem;
+      }
+      
+      & > div {
+          padding: 2rem 1rem 2rem 1rem;
+          margin-bottom: 1rem;
+          background-color: white;
+          border-radius: 0.25rem;
+          transition: all .2s ease-out;
+          background-color: #f1ffff;
+
+          & dd:first-of-type {
+              color: #00bcbc;
+              font-weight: 900;
+          }
+      }
+      & > div:hover {
+          transition: all .1s ease-out;
+          box-shadow: 0 3px 9px rgb(0 0 0 / 25%);
+          background-color: #fff;
+      }
+  }
+}
