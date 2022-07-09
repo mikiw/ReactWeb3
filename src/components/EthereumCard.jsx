@@ -64,7 +64,7 @@ function EthereumCard() {
     // Update block height after component mount.
     useEffect(() => {
         const fetchData = async () => {
-            const lastEthblock = await getBlockHeight(new Date().getUTCMilliseconds());
+            const lastEthblock = await getBlockHeight(Date.now());
             setEndBlock(lastEthblock);
         }
         
