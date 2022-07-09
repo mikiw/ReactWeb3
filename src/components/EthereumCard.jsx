@@ -78,7 +78,7 @@ function EthereumCard() {
         setTxListTokens(null);
     };
 
-    // Update block height after component mount.
+    // Clear transactions when input chage.
     useEffect(() => {
         clearTransactions();
     }, [ethAddress, startBlock, endBlock, endBlockDate]);
