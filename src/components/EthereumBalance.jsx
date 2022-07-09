@@ -59,27 +59,27 @@ export const EthereumBalance = forwardRef((props, ref) => {
         let outputTxListInternalGas = new BN(0);
 
         // Input transactions.
-        txList.filter(tx => tx.to == address).forEach(tx => {
+        txList.filter(tx => tx.to === address).forEach(tx => {
             // When a transaction is marked "Fail" on Etherscan.io, the funds the sender 
             // intended to send are not deducted but remain in the sender's wallet.
             // However, the "Gas Fee" will still be deducted.
-            inputTxListEth = tx.isError == "0" ? inputTxListEth.add(new BN(tx.value)) : inputTxListEth;
+            inputTxListEth = tx.isError === "0" ? inputTxListEth.add(new BN(tx.value)) : inputTxListEth;
         });
 
         // Output transactions and gas fees.
-        txList.filter(tx => tx.from == address).forEach(tx => {
+        txList.filter(tx => tx.from === address).forEach(tx => {
             // Same story here.
-            outputTxListEth = tx.isError == "0" ? outputTxListEth.add(new BN(tx.value)) : outputTxListEth;
+            outputTxListEth = tx.isError === "0" ? outputTxListEth.add(new BN(tx.value)) : outputTxListEth;
             outputTxListGas = outputTxListGas.add(new BN(tx.gasUsed).mul(new BN(tx.gasPrice)));
         });
 
         // Input internal transactions.
-        txListInternals.filter(tx => tx.to == address).forEach(tx => {
+        txListInternals.filter(tx => tx.to === address).forEach(tx => {
             inputTxListInternalEth = inputTxListInternalEth.add(new BN(tx.value));
         });
 
         // Output internal transactions and gas fees.
-        txListInternals.filter(tx => tx.from == address).forEach(tx => {
+        txListInternals.filter(tx => tx.from === address).forEach(tx => {
             outputTxListInternalEth = outputTxListInternalEth.add(new BN(tx.value));
             outputTxListInternalGas = outputTxListInternalGas.add(new BN(tx.gasUsed).mul(new BN(tx.value)));
         });
@@ -111,12 +111,12 @@ export const EthereumBalance = forwardRef((props, ref) => {
             let outputTokenValue = new BN(0);
 
             // Input transactions.
-            contract.filter(tx => tx.to == address).forEach(tx => {
+            contract.filter(tx => tx.to === address).forEach(tx => {
                 inputTokenValue = inputTokenValue.add(new BN(tx.value));
             });
             
             // Output transactions.
-            contract.filter(tx => tx.from == address).forEach(tx => {
+            contract.filter(tx => tx.from === address).forEach(tx => {
                 outputTokenValue = outputTokenValue.add(new BN(tx.value));
             });
 
