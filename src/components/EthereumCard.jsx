@@ -88,7 +88,7 @@ function EthereumCard() {
         e.preventDefault();
         
         setStartBlock(0);
-        setEndBlock(await getBlockHeight(moment(endBlockDate).valueOf()));
+        setEndBlock(await getBlockHeight(moment.utc(endBlockDate).valueOf()));
         clearTransactions();
     };
 
