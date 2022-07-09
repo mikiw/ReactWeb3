@@ -50,13 +50,12 @@ Etherscan balance:
 
 ![Page](./doc-img/page-etherscan.png)
 
-If we will set a date to `2022-07-08` and we will click `Update blocks by date` button and later
-`Get balances and transactions` button we will have fewer transactions (23 instead of 26)
+If we will set a date to `2022-04-30` and we will click `Update blocks by date` button and later
+`Get balances and transactions` button we will have fewer transactions (6 instead of 26)
 also the Ether balance and USDC token balance will be different:
 
-![Page](./doc-img/page-23tx.png)
+![Page](./doc-img/page-6tx.png)
 ![Page](./doc-img/usdc.png)
-![Page](./doc-img/usdc-balance.png)
 
 ## TODO
 
